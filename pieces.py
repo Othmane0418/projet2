@@ -40,7 +40,12 @@ class Piece():
         legal_moves = []
 
         # TODO: Écrire votre code ici
-
+        for move in moves:
+            board_test = deepcopy(board_init)
+            board_test.move_piece(self.get_pos(), move)
+            if not is_check(board_test, self.get_color()):
+                legal_moves.append(move)
+       
         return legal_moves
     
 
@@ -116,7 +121,17 @@ class Knight(Piece):
         board_arr = board.get_board()
         
         # TODO: Écrire votre code ici
-
+        directions = [
+            (-2, -1), (-2, 1),
+            (-1, -2), (-1, 2),
+            (1, -2), (1, 2),
+            (2, -1), (2, 1)]
+        
+        for direction in directions:
+            move = sum_coordinates(self.get_pos(), direction)
+            if 0 <= move[0] < 8 and 0 <= move[1] < 8:
+                if board_arr[move] is None or board_arr[move].get_color() != self.get_color():
+                    moves.append(move)
         return moves
 
 
@@ -134,7 +149,17 @@ class Rook(Piece):
         board_arr = board.get_board()
         
         # TODO: Écrire votre code ici
-        
+        directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+        for direction in directions:
+            for distance in range(1, 8):
+                move = sum_coordinates(self.get_pos(), (direction[0] * distance, direction[1] * distance))
+                if not (0 <= move[0] < 8 and 0 <= move[1] < 8):
+                    break
+                if board_arr[move] is None:
+                    moves.append(move)
+                elif board_arr[move].get_color() != self.get_color():
+                    moves.append(move)
+                    break  
         return moves
 
 
@@ -152,7 +177,19 @@ class Bishop(Piece):
         board_arr = board.get_board()
 
         # TODO: Écrire votre code ici
-
+        directions = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
+        for direction in directions:
+            for distance in range(1, 8):
+                move = sum_coordinates(self.get_pos(), (direction[0] * distance, direction[1] * distance))
+                if not (0 <= move[0] < 8 and 0 <= move[1] < 8):
+                    break
+                if board_arr[move] is None:
+                    moves.append(move)
+                elif board_arr[move].get_color() != self.get_color():
+                    moves.append(move)
+                    break  
+                else:
+                    break 
         return moves
 
 
@@ -170,7 +207,25 @@ class Queen(Piece):
         board_arr = board.get_board()
 
         # TODO: Écrire votre code ici
+        directions = [
+            (-1, 0), (1, 0), (0, -1), (0, 1), 
+            (-1, -1), (-1, 1), (1, -1), (1, 1)  
+        ]
 
+        for direction in directions:
+            for distance in range(1, 8):
+                move = sum_coordinates(self.get_pos(), (direction[0] * distance, direction[1] * distance))
+
+                if not (0 <= move[0] < 8 and 0 <= move[1] < 8):
+                    break
+
+                if board_arr[move] is None:
+                    moves.append(move)
+                elif board_arr[move].get_color() != self.get_color():
+                    moves.append(move)
+                    break
+                else:
+                    break
         return moves
 
 
@@ -188,10 +243,20 @@ class King(Piece):
         board_arr = board.get_board()
 
         # TODO: Écrire votre code ici
+        directions = [
+            (-1, -1), (-1, 0), (-1, 1),
+            (0, -1),          (0, 1),
+            (1, -1),  (1, 0), (1, 1)
+        ]
+
+        for direction in directions:
+            move = sum_coordinates(self.get_pos(), direction)
+
+            if 0 <= move[0] < 8 and 0 <= move[1] < 8:
+                if board_arr[move] is None or board_arr[move].get_color() != self.get_color():
+                    moves.append(move)
 
         return moves
-
-
 # Utils functions
 def is_check(board, color):
     '''
@@ -201,7 +266,21 @@ def is_check(board, color):
     board_arr = board.get_board()
 
     # TODO: Écrire votre code ici
-
+    king_pos = None
+    for row in range(8):
+        for col in range(8):
+            piece = board_arr[row, col]
+            if piece and piece.get_name() == 'king' and piece.get_color() == color:
+                king_pos = (row, col)
+                break
+        if king_pos:
+            break
+    for row in range(8):
+        for col in range(8):
+            piece = board_arr[row, col]
+            if piece and piece.get_color() != color:
+                if king_pos in piece.get_moves(board):
+                    return True
     return False
 
 
@@ -216,5 +295,11 @@ pieces_dict = {
             'b':Bishop,
             'q':Queen,
             'k':King,
+            'P':Pawn,
+            'R':Rook,
+            'N':Knight,
+            'B':Bishop,
+            'Q':Queen,
+            'K':King
         }
 

@@ -41,7 +41,15 @@ class Board():
         board = np.empty((8,8), dtype=object)
 
         # TODO: Écrire votre code ici
-                    
+        rows = self.scheme.strip().split('\n')
+        for i, row in enumerate(rows):
+            cols = row.strip().split()
+            for j, char in enumerate(cols):
+                if char == '.':
+                    board[i, j] = None
+                else:
+                    couleur = 'white' if char.islower() else 'black'
+                    board[i, j] = pieces_dict[char](start_pos=(i, j), color=couleur)          
         return board
 
     def piece_at(self, coordinate : tuple):
@@ -52,7 +60,7 @@ class Board():
         Function that update self.turn
         '''
         # TODO: Écrire votre code ici et retirer pass
-        pass
+        self.turn = 'black' if self.turn == 'white' else 'white'
     
     def move_piece(self, start_pos, end_pos):
         '''
@@ -62,8 +70,12 @@ class Board():
         - update self.last_piece
         '''
         # TODO: Écrire votre code ici et retirer pass
-        pass
-
+        piece = self.board[start_pos]
+        self.board[end_pos] = piece
+        self.board[start_pos] = None
+        piece.set_new_pos(end_pos)
+        self.last_piece = piece
+        
     def push(self, start_pos, end_pos):
         # Move piece
         self.move_piece(start_pos, end_pos)
